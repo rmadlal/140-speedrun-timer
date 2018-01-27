@@ -84,5 +84,16 @@ namespace SpeedrunTimerModTests
 			Assert.AreEqual(-6, result.offset);
 			Assert.AreEqual(18, beatTime.quarterBeatCount, "BeatTime should be immutable!");
 		}
+
+		[TestMethod]
+		public void BeatTime_DefaultValue()
+		{
+			var beatTime = new BeatTime();
+
+			Assert.AreEqual(0, beatTime.quarterBeatCount);
+			Assert.AreEqual(0, beatTime.offset);
+			Assert.AreEqual(TimeSpan.Zero, beatTime.TimeSpan);
+			Assert.AreEqual(0, beatTime.Milliseconds);
+		}
 	}
 }
