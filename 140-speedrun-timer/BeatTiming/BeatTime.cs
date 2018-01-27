@@ -62,6 +62,7 @@ namespace SpeedrunTimerMod.BeatTiming
 
 		public static decimal GetQuarterBeatInterval(int bpm)
 		{
+			if (bpm == 0) return 0;
 			return (decimal)60 / bpm / 4 * 1000;
 		}
 
