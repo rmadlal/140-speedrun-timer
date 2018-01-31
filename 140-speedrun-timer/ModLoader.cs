@@ -1,6 +1,8 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace SpeedrunTimerMod
 {
@@ -15,6 +17,8 @@ namespace SpeedrunTimerMod
 
 		static bool _disabled;
 		static string _errorDisplayMessage;
+		static Stopwatch _errorDisplayStopwatch = new Stopwatch();
+		static TimeSpan _errorDisplayDuration;
 
 		void Awake()
 		{
@@ -81,11 +85,19 @@ namespace SpeedrunTimerMod
 				var style = new GUIStyle()
 				{
 					fontSize = UI.ScaleVertical(20),
-					fontStyle = FontStyle.Bold
+					fontStyle = FontStyle.Bold,
+					alignment = TextAnchor.MiddleCenter
 				};
 				style.normal.textColor = Color.red;
-				GUI.Label(new Rect(3, 0, Screen.width, UI.ScaleVertical(style.fontSize)),
+				GUI.Label(new Rect(0, 0, Screen.width, Screen.height),
 					_errorDisplayMessage, style);
+
+				if (_errorDisplayDuration != TimeSpan.Zero
+					&& _errorDisplayStopwatch.Elapsed > _errorDisplayDuration)
+				{
+					_errorDisplayMessage = null;
+					_errorDisplayDuration = TimeSpan.Zero;
+				}
 			}
 		}
 
@@ -102,12 +114,20 @@ namespace SpeedrunTimerMod
 			LoaderObject.AddComponent<ModLoader>();
 		}
 
+		public static void ShowErrorMessage(string message, TimeSpan duration = default(TimeSpan))
+		{
+			_errorDisplayMessage = message;
+			_errorDisplayStopwatch.Reset();
+			_errorDisplayStopwatch.Start();
+			_errorDisplayDuration = duration;
+		}
+
 		public static void TriggerCriticalError(string exceptionMsg, string displayMsg = null)
 		{
 			if (displayMsg == null)
 				displayMsg = "Speedrun Timer Mod encountered a critical error, check output_log.txt";
 
-			_errorDisplayMessage = displayMsg;
+			ShowErrorMessage(displayMsg);
 			_disabled = true;
 			DestroyModObjects();
 			throw new Exception("Speedrun Timer Mod Critical Error\n" + exceptionMsg);
