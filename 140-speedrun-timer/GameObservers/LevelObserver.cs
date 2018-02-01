@@ -50,19 +50,30 @@ namespace SpeedrunTimerMod.GameObservers
 			// we know the beat starts 1 second after level load
 			// except when end sound is playing
 			// see GlobalBeatMaster.startTime
-			var beatStartTime = !_endSoundPlaying ? 1000 : 3000;
+			var beatStartTime = !_endSoundPlaying ? -1000 : -3000;
 
 			if (SpeedrunTimer.Instance.IsRunning)
 			{
-				SpeedrunTimer.Instance.EndLoad(beatStartTime * -1);
-			}
-			else if (ModLoader.Settings.ILMode && !_isInMenu)
-			{
-				SpeedrunTimer.Instance.StartTimer(beatStartTime * -1);
+				SpeedrunTimer.Instance.EndLoad(beatStartTime);
 			}
 
-			Debug.Log($"GlobalBeatStarted: added {beatStartTime}ms to timer\n"
-				+ DebugBeatListener.DebugStr);
+			if (!_isInMenu)
+			{
+				var level = (int)char.GetNumericValue(Application.loadedLevelName[5]);
+				if (level > 0)
+				{
+					Debug.Log($"Level {level} started\n" + DebugBeatListener.DebugStr);
+					SpeedrunTimer.Instance.LevelStart(level, beatStartTime);
+				}
+
+				if (ModLoader.Settings.ILMode)
+				{
+					SpeedrunTimer.Instance.StartTimer(beatStartTime);
+				}
+
+				Debug.Log($"GlobalBeatStarted: added {beatStartTime}ms to timer\n"
+					+ DebugBeatListener.DebugStr);
+			}
 		}
 	}
 }

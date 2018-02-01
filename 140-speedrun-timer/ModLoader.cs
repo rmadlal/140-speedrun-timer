@@ -1,3 +1,4 @@
+using SpeedrunTimerMod.Logging;
 using System;
 using System.Diagnostics;
 using System.Linq;
@@ -50,6 +51,8 @@ namespace SpeedrunTimerMod
 			Application.targetFrameRate = Settings.TargetFramerate;
 			Application.runInBackground = Settings.RunInBackground;
 			QualitySettings.vSyncCount = Settings.Vsync ? 1 : 0;
+
+			RunLogFile.OpenFileAsync();
 		}
 
 		void ModObjInit()
@@ -65,6 +68,7 @@ namespace SpeedrunTimerMod
 			MainObject.AddComponent<DebugBeatListener>();
 			var speedrunTimer = MainObject.AddComponent<SpeedrunTimer>();
 			speedrunTimer.LiveSplitSyncEnabled = Settings.LiveSplitSyncEnabled;
+			MainObject.AddComponent<OldSpeedrunTimer>();
 			MainObject.AddComponent<UI>();
 			MainObject.AddComponent<Updater>();
 		}
@@ -72,10 +76,9 @@ namespace SpeedrunTimerMod
 		void LevelObjInit()
 		{
 			LevelObject = new GameObject();
-            LevelObject.AddComponent<GameObserversManager>();
+			LevelObject.AddComponent<GameObserversManager>();
 			LevelObject.AddComponent<ResetHotkey>();
 			LevelObject.AddComponent<Cheats>();
-			LevelObject.AddComponent<PlayerControlOverride>();
 		}
 
 		void OnGUI()
@@ -130,6 +133,7 @@ namespace SpeedrunTimerMod
 			ShowErrorMessage(displayMsg);
 			_disabled = true;
 			DestroyModObjects();
+			RunLogFile.CloseFile();
 			throw new Exception("Speedrun Timer Mod Critical Error\n" + exceptionMsg);
 		}
 
