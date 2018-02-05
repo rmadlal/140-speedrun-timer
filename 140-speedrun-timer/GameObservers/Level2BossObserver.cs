@@ -51,7 +51,7 @@ namespace SpeedrunTimerMod.GameObservers
 
 			_checkScrollEnded = false;
 
-			if (_tunnelSequence.wallToMakeTriggerWhenDoorsStartClosing1.isTrigger)
+			if (_tunnelSequence.endWallLeft.renderer.enabled)
 				OnLevel2BossEnd();
 		}
 
