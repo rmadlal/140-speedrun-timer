@@ -110,11 +110,6 @@ namespace SpeedrunTimerMod
 			return beats;
 		}
 
-		public static void Clear(this Array arr)
-		{
-			Array.Clear(arr, 0, arr.Length);
-		}
-
 		internal class Label
 		{
 			public Rect Position => positionDelegate();

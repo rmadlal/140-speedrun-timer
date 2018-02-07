@@ -250,7 +250,7 @@ namespace SpeedrunTimerMod
 			_speedrunStopwatch.Reset();
 			_beatTimer.ResetTimer();
 			_visualFreeze = false;
-			RunLog.Clear();
+			RunLog = new RunLog();
 
 			if (LiveSplitSyncEnabled)
 				_liveSplitSync.Reset();

@@ -26,7 +26,10 @@ namespace SpeedrunTimerMod
 		{
 			Instance = this;
 			_stopwatch = new SpeedrunStopwatch();
-			RunLog = new RunLog();
+			RunLog = new RunLog()
+			{
+				IsMirrored = MirrorModeManager.mirrorModeActive
+			};
 		}
 
 		void OnDestroy()
@@ -122,7 +125,10 @@ namespace SpeedrunTimerMod
 		{
 			_stopwatch.Reset();
 			_visualFreeze = false;
-			RunLog.Clear();
+			RunLog = new RunLog()
+			{
+				IsMirrored = MirrorModeManager.mirrorModeActive
+			};
 		}
 
 		public void StartLoad()

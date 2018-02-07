@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 
 namespace SpeedrunTimerMod.Logging
 {
@@ -9,6 +10,12 @@ namespace SpeedrunTimerMod.Logging
 		public SpeedrunTime[] IndividualLevelTimes { get; private set; }
 		public SpeedrunTime[] LevelSplitTimes { get; private set; }
 		public DateTime StartDate { get; set; }
+		public bool CheatsEnabled { get; set; }
+		public bool IsLegacy { get; set; }
+		public Version Version { get; set; }
+
+		//TODO: class holding the info for one level
+		// writers should take a IList<ThatClass> instead
 
 		SpeedrunTime[] _levelStartTimes;
 
@@ -17,14 +24,8 @@ namespace SpeedrunTimerMod.Logging
 			IndividualLevelTimes = new SpeedrunTime[LEVEL_COUNT];
 			LevelSplitTimes = new SpeedrunTime[LEVEL_COUNT];
 			_levelStartTimes = new SpeedrunTime[LEVEL_COUNT];
-		}
-
-		public void Clear()
-		{
-			StartDate = default(DateTime);
-			IndividualLevelTimes.Clear();
-			LevelSplitTimes.Clear();
-			_levelStartTimes.Clear();
+			IsLegacy = ModLoader.IsLegacyVersion;
+			Version = Assembly.GetExecutingAssembly().GetName().Version;
 		}
 
 		public void LevelStart(int level, SpeedrunTime timestamp)
@@ -48,6 +49,17 @@ namespace SpeedrunTimerMod.Logging
 			ThrowIfLevelOutOfRange(level);
 
 			return IndividualLevelTimes[level - 1].RealTime != TimeSpan.Zero;
+		}
+
+		public DateTime GetLevelStartDate(int level)
+		{
+			ThrowIfLevelOutOfRange(level);
+
+			var index = level - 1;
+			var levelSplitTime = LevelSplitTimes[index].RealTime;
+			var levelTime = IndividualLevelTimes[index].RealTime;
+			var levelStartTime = levelSplitTime - levelTime;
+			return StartDate + levelStartTime;
 		}
 
 		void ThrowIfLevelOutOfRange(int level)

@@ -80,74 +80,48 @@ namespace SpeedrunTimerMod.Logging
 		string GetFullGameCsv(string categoryName, int lastSplitIndex)
         {
 			var lastSplit = Log.LevelSplitTimes[lastSplitIndex];
-			var realTime = Utils.FormatTime(lastSplit.RealTime, 3);
-			var gameTime = Utils.FormatTime(lastSplit.GameTime, 3);
-			var gameBeatTime = lastSplit.GameBeatTime;
-
 			var lastSplitOld = OldTimingLog.LevelSplitTimes[lastSplitIndex];
-			var realTimeOld = Utils.FormatTime(lastSplitOld.RealTime, 3);
-			var gameTimeOld = Utils.FormatTime(lastSplitOld.GameTime, 3);
 
-			var metadata = GetMetadataCsv();
-
-			return $"{categoryName},REAL TIME,GAME TIME,GAME TIME (RAW)"
-				+ ",REAL TIME (OLD TIMING),GAME TIME (OLD TIMING)"
-				+ "," + metadata[0]
-				+ Environment.NewLine
-				+ $",{realTime},{gameTime},{gameBeatTime}"
-				+ $",{realTimeOld},{gameTimeOld}"
-				+ "," + metadata[1]
-				+ Environment.NewLine;
+			return GetLogCsv(categoryName, Log.StartDate, lastSplit, lastSplitOld);
 		}
 
-		string GetIndividualLevelCsv(int levelIndex, bool withMetadata = true)
+		string GetIndividualLevelCsv(int levelIndex)
 		{
 			var levelTime = Log.IndividualLevelTimes[levelIndex];
-			var realTime = Utils.FormatTime(levelTime.RealTime, 3);
-			var gameTime = Utils.FormatTime(levelTime.GameTime, 3);
-			var gameBeatTime = levelTime.GameBeatTime;
-
 			var levelTimeOld = OldTimingLog.IndividualLevelTimes[levelIndex];
-			var realTimeOld = Utils.FormatTime(levelTimeOld.RealTime, 3);
-			var gameTimeOld = Utils.FormatTime(levelTimeOld.GameTime, 3);
 
-			var metadataHeader= string.Empty;
-			var metadataValues = string.Empty;
-			if (withMetadata)
-			{
-				var metadata = GetMetadataCsv(levelIndex);
-				metadataHeader = "," + metadata[0];
-				metadataValues = "," + metadata[1];
-			}
-
-			return $"LEVEL {levelIndex + 1},REAL TIME,GAME TIME,GAME TIME (RAW)"
-				+ ",REAL TIME (OLD TIMING),GAME TIME (OLD TIMING)"
-				+ metadataHeader
-				+ Environment.NewLine
-				+ $",{realTime},{gameTime},{gameBeatTime},"
-				+ $"{realTimeOld},{gameTimeOld}"
-				+ metadataValues
-				+ Environment.NewLine;
-		}
-
-		string[] GetMetadataCsv(int levelIndex = -1)
-		{
-			var version = Assembly.GetExecutingAssembly().GetName().Version;
 			var startDate = Log.StartDate;
-
 			if (levelIndex >= 0)
 			{
-				var levelSplitTime = Log.LevelSplitTimes[levelIndex].RealTime;
-				var levelTime = Log.IndividualLevelTimes[levelIndex].RealTime;
-				var levelStartTime = levelSplitTime - levelTime;
-				startDate += levelStartTime;
+				startDate = Log.GetLevelStartDate(levelIndex + 1);
 			}
 
+			return GetLogCsv($"LEVEL {levelIndex + 1}", startDate, levelTime, levelTimeOld);
+		}
+
+		string GetLogCsv(string category, DateTime startDate, SpeedrunTime time,
+			SpeedrunTime oldTimingTime)
+		{
 			var startDateStr = startDate.ToString("s", CultureInfo.InvariantCulture);
-			return new string[] {
-				"START DATE (UTC),CHEATS,VERSION",
-				$"{startDateStr},{Cheats.Enabled},{version}"
-			};
+
+			var decimals = 3;
+			var realTimeStr = Utils.FormatTime(time.RealTime, decimals);
+			var gameTimeStr = Utils.FormatTime(time.GameTime, decimals);
+
+			var realTimeOldStr = Utils.FormatTime(oldTimingTime.RealTime, decimals);
+			var gameTimeOldStr = Utils.FormatTime(oldTimingTime.GameTime, decimals);
+
+			var version = Log.Version;
+			var gameVersion = Log.IsLegacy ? "2013" : "2017";
+
+			return category + ",START DATE (UTC),REAL TIME,GAME TIME,GAME TIME (RAW)"
+				+ ",REAL TIME (OLD TIMING),GAME TIME (OLD TIMING)"
+				+ ",CHEATS,MOD VERSION,GAME VERSION"
+				+ Environment.NewLine
+				+ $",{startDateStr},{realTimeStr},{gameTimeStr},{time.GameBeatTime}"
+				+ $",{realTimeOldStr},{gameTimeOldStr}"
+				+ $",{Log.CheatsEnabled},{Log.Version},{gameVersion}"
+				+ Environment.NewLine;
 		}
 
 		int CountSelectedLevels()
