@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Globalization;
-using System.Reflection;
 using UnityEngine;
 
 namespace SpeedrunTimerMod.Logging
@@ -79,28 +78,24 @@ namespace SpeedrunTimerMod.Logging
 
 		string GetFullGameCsv(string categoryName, int lastSplitIndex)
         {
-			var lastSplit = Log.LevelSplitTimes[lastSplitIndex];
-			var lastSplitOld = OldTimingLog.LevelSplitTimes[lastSplitIndex];
+			var lastLevel = Log.Levels[lastSplitIndex];
+			var lastLevelOld = OldTimingLog.Levels[lastSplitIndex];
 
-			return GetLogCsv(categoryName, Log.StartDate, lastSplit, lastSplitOld);
+			return GetLogCsv(categoryName, Log.StartDate, lastLevel.SplitTime,
+				lastLevelOld.SplitTime,	lastLevel.IsMirrored, lastLevel.CheatsEnabled);
 		}
 
 		string GetIndividualLevelCsv(int levelIndex)
 		{
-			var levelTime = Log.IndividualLevelTimes[levelIndex];
-			var levelTimeOld = OldTimingLog.IndividualLevelTimes[levelIndex];
+			var levelLog = Log.Levels[levelIndex];
+			var levelLogOldTiming = OldTimingLog.Levels[levelIndex];
 
-			var startDate = Log.StartDate;
-			if (levelIndex >= 0)
-			{
-				startDate = Log.GetLevelStartDate(levelIndex + 1);
-			}
-
-			return GetLogCsv($"LEVEL {levelIndex + 1}", startDate, levelTime, levelTimeOld);
+			return GetLogCsv($"LEVEL {levelIndex + 1}", levelLog.StartDate, levelLog.Time,
+				levelLogOldTiming.Time, levelLog.IsMirrored, levelLog.CheatsEnabled);
 		}
 
 		string GetLogCsv(string category, DateTime startDate, SpeedrunTime time,
-			SpeedrunTime oldTimingTime)
+			SpeedrunTime oldTimingTime, bool isMirrored,  bool cheatsEnabled)
 		{
 			var startDateStr = startDate.ToString("s", CultureInfo.InvariantCulture);
 
@@ -113,16 +108,20 @@ namespace SpeedrunTimerMod.Logging
 
 			var version = Log.Version;
 			var gameVersion = Log.IsLegacy ? "2013" : "2017";
+			var cheats = BoolToYesNo(cheatsEnabled);
+			var mirrored = BoolToYesNo(isMirrored);
 
 			return category + ",START DATE (UTC),REAL TIME,GAME TIME,GAME TIME (RAW)"
 				+ ",REAL TIME (OLD TIMING),GAME TIME (OLD TIMING)"
-				+ ",CHEATS,MOD VERSION,GAME VERSION"
+				+ ",MIRRORED,CHEATS,MOD VERSION,GAME VERSION"
 				+ Environment.NewLine
 				+ $",{startDateStr},{realTimeStr},{gameTimeStr},{time.GameBeatTime}"
 				+ $",{realTimeOldStr},{gameTimeOldStr}"
-				+ $",{Log.CheatsEnabled},{Log.Version},{gameVersion}"
+				+ $",{mirrored},{cheats},{Log.Version},{gameVersion}"
 				+ Environment.NewLine;
 		}
+
+		string BoolToYesNo(bool b) => b ? "Yes" : "No";
 
 		int CountSelectedLevels()
 		{

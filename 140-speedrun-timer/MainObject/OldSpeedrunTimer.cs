@@ -26,10 +26,7 @@ namespace SpeedrunTimerMod
 		{
 			Instance = this;
 			_stopwatch = new SpeedrunStopwatch();
-			RunLog = new RunLog()
-			{
-				IsMirrored = MirrorModeManager.mirrorModeActive
-			};
+			RunLog = new RunLog();
 		}
 
 		void OnDestroy()
@@ -98,14 +95,17 @@ namespace SpeedrunTimerMod
 				RunLog.CompleteLevel(level, time);
 
 				if (level == 2)
-				{
-					var writer = new RunLogCsvWriter(SpeedrunTimer.Instance.RunLog, RunLog)
-					{
-						Level2 = true
-					};
-					StartCoroutine(writer.WriteToLogAsyncOnFrameEnd());
-				}
+					LogLevel2();
 			});
+		}
+
+		void LogLevel2()
+		{
+			var writer = new RunLogCsvWriter(SpeedrunTimer.Instance.RunLog, RunLog)
+			{
+				Level2 = true
+			};
+			StartCoroutine(writer.WriteToLogAsyncOnFrameEnd());
 		}
 
 		public void StartTimer()
@@ -125,10 +125,7 @@ namespace SpeedrunTimerMod
 		{
 			_stopwatch.Reset();
 			_visualFreeze = false;
-			RunLog = new RunLog()
-			{
-				IsMirrored = MirrorModeManager.mirrorModeActive
-			};
+			RunLog = new RunLog();
 		}
 
 		public void StartLoad()

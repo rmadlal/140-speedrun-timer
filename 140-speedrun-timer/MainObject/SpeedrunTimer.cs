@@ -140,27 +140,30 @@ namespace SpeedrunTimerMod
 				var time = new SpeedrunTime(_speedrunStopwatch.RealTime, _beatTimer.Time);
 				RunLog.CompleteLevel(level, time);
 
-				if (level == 2)
-					return;
-
-				var anyPercent = RunLog.CheckIfLevelDone(1)
-					&& RunLog.CheckIfLevelDone(2)
-					&& RunLog.CheckIfLevelDone(3);
-				var allLevels = anyPercent && RunLog.CheckIfLevelDone(4);
-
-				var writer = new RunLogCsvWriter(RunLog, OldSpeedrunTimer.Instance.RunLog)
-				{
-					Level1 = level == 1,
-					//Level2 = level == 2, // logged in OldSpeedrunTimer
-					Level3 = level == 3,
-					Level4 = level == 4,
-					AllLevels = allLevels,
-					AnyPercent = anyPercent && !allLevels,
-				};
-
-				// write at end of frame to make sure the old timer's log is ready
-				StartCoroutine(writer.WriteToLogAsyncOnFrameEnd());
+				if (level != 2)
+					Log(level);
 			});
+		}
+
+		void Log(int level)
+		{
+			var anyPercent = RunLog.IsLevelDone(1)
+				&& RunLog.IsLevelDone(2)
+				&& RunLog.IsLevelDone(3);
+			var allLevels = anyPercent && RunLog.IsLevelDone(4);
+
+			var writer = new RunLogCsvWriter(RunLog, OldSpeedrunTimer.Instance.RunLog)
+			{
+				Level1 = level == 1,
+				//Level2 = level == 2, // logged in OldSpeedrunTimer
+				Level3 = level == 3,
+				Level4 = level == 4,
+				AllLevels = allLevels,
+				AnyPercent = anyPercent && !allLevels,
+			};
+
+			// write at end of frame to make sure the old timer's log is ready
+			StartCoroutine(writer.WriteToLogAsyncOnFrameEnd());
 		}
 
 		/// <summary>
