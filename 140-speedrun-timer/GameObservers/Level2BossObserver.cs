@@ -51,7 +51,7 @@ namespace SpeedrunTimerMod.GameObservers
 
 			_checkScrollEnded = false;
 
-			if (_tunnelSequence.endWallLeft.renderer.enabled)
+			if (_tunnelSequence.endWallLeft.GetComponent<Renderer>().enabled)
 				OnLevel2BossEnd();
 		}
 

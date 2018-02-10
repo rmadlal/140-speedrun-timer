@@ -15,7 +15,7 @@ namespace SpeedrunTimerModTests
 			var timeIncrement = new SpeedrunTime(TimeSpan.FromMinutes(3.1374), TimeSpan.FromMinutes(2.7684));
 			var timer = new SpeedrunTime();
 
-			for (var lvl = 1; lvl <= log.IndividualLevelTimes.Length; lvl++)
+			for (var lvl = 1; lvl <= log.Levels.Length; lvl++)
 			{
 				timer += timeIncrement;
 				log.LevelStart(lvl, timer);
@@ -29,8 +29,8 @@ namespace SpeedrunTimerModTests
 
 				log.CompleteLevel(lvl, timer);
 
-				Assert.AreEqual(expectedLevelTime, log.IndividualLevelTimes[lvl - 1]);
-				Assert.AreEqual(timer, log.LevelSplitTimes[lvl - 1]);
+				Assert.AreEqual(expectedLevelTime, log.Levels[lvl - 1].Time);
+				Assert.AreEqual(timer, log.Levels[lvl - 1].SplitTime);
 			}
 		}
 	}

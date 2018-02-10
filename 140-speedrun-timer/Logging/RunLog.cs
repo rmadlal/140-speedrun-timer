@@ -61,13 +61,8 @@ namespace SpeedrunTimerMod.Logging
 
 		void ThrowIfLevelOutOfRange(int level)
 		{
-			if (!CheckLevelRange(level))
+			if (level < 1 || level > LEVEL_COUNT)
 				throw new ArgumentOutOfRangeException(nameof(level));
-		}
-
-		bool CheckLevelRange(int level)
-		{
-			return level >= 1 && level <= LEVEL_COUNT;
 		}
 	}
 }

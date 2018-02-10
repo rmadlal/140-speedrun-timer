@@ -18,7 +18,6 @@ namespace SpeedrunTimerMod.GameObservers.OldTiming
 
 			if (Application.loadedLevelName.StartsWith("Level2_"))
 			{
-				Debug.Log("Start OldLevelObserver: level2");
 				var bossObj = GameObject.Find("BossPart3");
 				if (bossObj != null)
 				{

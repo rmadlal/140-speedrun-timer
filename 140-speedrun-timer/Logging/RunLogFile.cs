@@ -8,10 +8,18 @@ namespace SpeedrunTimerMod.Logging
 	static class RunLogFile
 	{
 		public const string FILE_NAME = "speedrun-log.csv";
-		public static readonly string FILE_PATH = Path.Combine(Application.dataPath, FILE_NAME);
+		public static readonly string FILE_PATH = Path.Combine(GetFolder(), FILE_NAME);
 
 		static readonly object _syncRoot = new object();
 		static FileStream _logFile;
+
+		static string GetFolder()
+		{
+			if (Application.platform == RuntimePlatform.WindowsPlayer)
+				return Application.dataPath;
+			else
+				return Application.persistentDataPath;
+		}
 
 		public static bool OpenFile()
 		{
@@ -37,6 +45,7 @@ namespace SpeedrunTimerMod.Logging
 						IsReadOnly = true
 					};
 
+					Debug.Log("Opened " + FILE_PATH);
 					return true;
 				}
 				catch (Exception e)

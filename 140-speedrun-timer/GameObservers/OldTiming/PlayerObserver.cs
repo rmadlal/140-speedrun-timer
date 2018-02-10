@@ -51,7 +51,8 @@ namespace SpeedrunTimerMod.GameObservers.OldTiming
 			if (_spawned || _isInMenu)
 				return;
 
-			if (!_player.IsLogicPause() && GetControlPaused() && GetMoveDirection().y == 0f)
+			if (!_player.IsLogicPause() && _player.IsOnGround()
+				&& GetControlPaused() && GetMoveDirection().y == 0f)
 			{
 				_spawned = true;
 
