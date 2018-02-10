@@ -97,7 +97,9 @@ namespace SpeedrunTimerMod.Logging
 		string GetLogCsv(string category, DateTime startDate, SpeedrunTime time,
 			SpeedrunTime oldTimingTime, bool isMirrored,  bool cheatsEnabled)
 		{
-			var startDateStr = startDate.ToString("s", CultureInfo.InvariantCulture);
+			if (startDate.Kind == DateTimeKind.Utc)
+				startDate = startDate.ToLocalTime();
+			var startDateStr = startDate.ToString("o", CultureInfo.InvariantCulture);
 
 			var decimals = 3;
 			var realTimeStr = Utils.FormatTime(time.RealTime, decimals);
@@ -111,7 +113,7 @@ namespace SpeedrunTimerMod.Logging
 			var cheats = BoolToYesNo(cheatsEnabled);
 			var mirrored = BoolToYesNo(isMirrored);
 
-			return category + ",START DATE (UTC),REAL TIME,GAME TIME,GAME TIME (RAW)"
+			return category + ",START DATE,REAL TIME,GAME TIME,GAME TIME (RAW)"
 				+ ",REAL TIME (OLD TIMING),GAME TIME (OLD TIMING)"
 				+ ",MIRRORED,CHEATS,MOD VERSION,GAME VERSION"
 				+ Environment.NewLine
