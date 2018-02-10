@@ -232,7 +232,7 @@ namespace SpeedrunTimerMod
 				ResetTimer();
 				_speedrunStopwatch.Start((int)beatTime.Milliseconds);
 				_beatTimer.StartTimer(millisecondsOffset, quarterBeatsOffset);
-				RunLog.StartDate = _speedrunStopwatch.StartDate;
+				RunLog.StartDate = _speedrunStopwatch.StartDate + beatTime.TimeSpan;
 
 				if (LiveSplitSyncEnabled)
 					_liveSplitSync.Start();
